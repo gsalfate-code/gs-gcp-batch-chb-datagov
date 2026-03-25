@@ -533,7 +533,7 @@ def main():
         else:
             print(f"   Maestro no existe — creando base inicial...")
             num_base = random.randint(10_000, 50_000)
-            print(f"   Generando {num_base:,} clientes base...")
+            print(f"   Generando {num_base:,} clientes base + movimientos del día...")
             clientes = [
                 generar_cliente(
                     f"C{str(i).zfill(7)}",
