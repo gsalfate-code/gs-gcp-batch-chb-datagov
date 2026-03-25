@@ -1,0 +1,9 @@
+# =============================================================================
+# packages.yml
+# DESCRIPCIÓN:
+#   Dependencias del proyecto DBT.
+#   dbt_utils provee macros útiles como generate_surrogate_key.
+# =============================================================================
+packages:
+  - package: dbt-labs/dbt_utils
+    version: [">=1.0.0", "<2.0.0"]

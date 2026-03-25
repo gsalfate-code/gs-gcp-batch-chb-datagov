@@ -51,7 +51,7 @@ validado as (
         date(timestamp(fecha_hora))                          as fecha,
         extract(hour from timestamp(fecha_hora))             as hora,
         extract(dayofweek from timestamp(fecha_hora))        as dia_semana,
-        format_timestamp('%A', timestamp(fecha_hora), 'es')  as nombre_dia,
+        format_timestamp('%A', timestamp(fecha_hora))  as nombre_dia,
 
         -- -------------------------------------------------------------------------
         -- FLAGS ML
