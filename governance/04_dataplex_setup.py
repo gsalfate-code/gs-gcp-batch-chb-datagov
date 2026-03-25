@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 PROJECT_ID = os.getenv("PROJECT_ID")
-REGION     = os.getenv("REGION", "us-central1")
+REGION = "us-central1"
 BUCKET     = os.getenv("BUCKET_NAME")
 LAKE_ID    = "chb-datagov-lake"
 
