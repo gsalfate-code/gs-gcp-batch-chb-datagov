@@ -224,7 +224,7 @@ def fpe_numero(numero: str) -> str:
     while len(hash_digits) < len(resto):
         hash_digits += hash_digits
     hash_digits = hash_digits[:len(resto)]
-    return bin_card + hash_digits
+    return (bin_card + hash_digits)[:16]
 
 def replace_infotype_en_texto(texto: str) -> str:
     """
