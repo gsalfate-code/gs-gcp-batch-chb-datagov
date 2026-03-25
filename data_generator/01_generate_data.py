@@ -150,8 +150,11 @@ def calcular_volumen_hora(hora: int, fecha: date, factor_dia: float) -> int:
     if fecha in FERIADOS_CHILE_2026:
         return 0
     if hora < HORARIO_INICIO or hora > HORARIO_FIN:
-        ruido = random.uniform(0.94, 1.06)
-        return max(VOLUMEN_MINIMO_HORA, int(VOLUMEN_MINIMO_HORA * factor_dia * ruido))
+        # Volumen nocturno único por hora — usa hora como seed adicional
+        # garantiza que ninguna hora nocturna tenga el mismo volumen
+        base   = VOLUMEN_MINIMO_HORA + (hora * 17)  # desplazamiento único por hora
+        ruido  = 0.7 + (((hora * 7 + int(factor_dia * 100)) % 100) / 150)
+        return int(base * ruido)
     curva = (
         0.5 * gaussian(hora, peak=10, amplitud=1.2) +
         0.5 * gaussian(hora, peak=15, amplitud=1.8)
