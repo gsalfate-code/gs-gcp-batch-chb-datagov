@@ -1,0 +1,89 @@
+# =============================================================================
+# sources.yml
+# DESCRIPCIÓN:
+#   Define las fuentes de datos Silver que DBT puede leer.
+#   Sin este archivo DBT no sabe dónde están las tablas de origen.
+#   Permite usar {{ source('silver', 'tabla') }} en los modelos SQL.
+#
+# CONCEPTO CLAVE:
+#   source() en DBT = referencia a tabla externa (no creada por DBT)
+#   ref() en DBT    = referencia a tabla creada por DBT
+# =============================================================================
+
+version: 2
+
+sources:
+  - name: silver
+    database: gs-gcp-batch-chb-datagov
+    schema: silver
+    description: "Capa Silver — datos desidentificados por Cloud DLP"
+
+    tables:
+      - name: clientes_deidentified
+        description: "Clientes con PII enmascarado — pseudonimización, FPE, masking, bucketing"
+        columns:
+          - name: id_cliente
+            description: "Identificador único del cliente"
+            tests:
+              - not_null
+              - unique
+
+          - name: rut_pseudo
+            description: "RUT pseudonimizado con SHA-256 — correlacionable"
+            tests:
+              - not_null
+
+          - name: score_crediticio
+            description: "Score crediticio 300-900"
+            tests:
+              - not_null
+
+          - name: arcop_estado
+            description: "Estado ARCOP del cliente"
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['ACTIVO', 'BLOQUEADO', 'ELIMINADO']
+
+      - name: transacciones_deidentified
+        description: "Transacciones con PII enmascarado y campos de negocio intactos"
+        columns:
+          - name: id_transaccion
+            description: "Identificador único de la transacción"
+            tests:
+              - not_null
+              - unique
+
+          - name: id_cliente
+            description: "FK a clientes_deidentified"
+            tests:
+              - not_null
+
+          - name: monto_clp
+            description: "Monto en pesos chilenos — puede ser negativo (error intencional)"
+
+      - name: arcop_solicitudes
+        description: "Solicitudes de derechos ARCOP — Ley 19.628"
+        columns:
+          - name: id_solicitud
+            description: "Identificador único de la solicitud"
+            tests:
+              - not_null
+              - unique
+
+          - name: tipo_derecho
+            description: "Tipo de derecho ejercido"
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['A', 'R', 'C', 'O', 'P']
+
+          - name: estado
+            description: "Estado de la solicitud"
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['PENDIENTE', 'EN_PROCESO', 'COMPLETADO', 'VENCIDO']
