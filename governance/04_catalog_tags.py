@@ -2,14 +2,9 @@
 # SCRIPT: 04_catalog_tags.py
 # PROYECTO: Chilean Bank — Data Governance GCP
 # DESCRIPCIÓN:
-#   Aplica Aspects de sensibilidad a todas las tablas Silver y Gold.
-#   Usa gcloud CLI para crear el aspect type y aplicar aspects.
-#
-# TIPOS VÁLIDOS EN DATAPLEX:
-#   string, bool, int, float, enum, datetime, date, time, record
-#
-# USO:
-#   python governance/04_catalog_tags.py
+#   Aplica Aspects de sensibilidad a tablas Silver y Gold.
+#   Usa entry names directos desde gcloud dataplex entries list
+#   en vez de lookup (que requiere permisos adicionales).
 # =============================================================================
 
 import os
@@ -25,31 +20,47 @@ PROJECT_ID     = os.getenv("PROJECT_ID")
 REGION         = os.getenv("REGION", "us-central1")
 TIMEZONE       = pytz.timezone(os.getenv("DAG_TIMEZONE", "America/Santiago"))
 ASPECT_TYPE_ID = "chb-sensitivity"
-ASPECT_TYPE    = f"projects/{PROJECT_ID}/locations/{REGION}/aspectTypes/{ASPECT_TYPE_ID}"
 
 def run(cmd: str) -> tuple:
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     return result.returncode == 0, result.stdout.strip(), result.stderr.strip()
 
+def get_entry_name(tabla: str, dataset: str) -> str:
+    """Obtiene el entry name completo desde gcloud dataplex entries list."""
+    success, out, err = run(
+        f"gcloud dataplex entries list "
+        f"--location={REGION} "
+        f"--project={PROJECT_ID} "
+        f"--entry-group='@bigquery' "
+        f"--filter='name:{tabla}' "
+        f"--format='value(name)' "
+        f"--limit=1"
+    )
+    if success and out:
+        # Construir el full entry name
+        return (
+            f"projects/{PROJECT_ID}/locations/{REGION}"
+            f"/entryGroups/@bigquery/entries/"
+            f"//bigquery.googleapis.com/projects/{PROJECT_ID}"
+            f"/datasets/{dataset}/tables/{tabla}"
+        )
+    return ""
+
 def aplicar_aspect(tabla_fqn: str, sensitivity: str, pii: bool,
                    ley19628: bool, owner: str, retention: int, arcop: bool) -> None:
-    """Aplica aspect de sensibilidad a una tabla BigQuery."""
     proyecto, dataset, tabla = tabla_fqn.split(".")
 
-    # Buscar entry name en Dataplex
-    success, entry_name, err = run(
-        f"gcloud dataplex entries lookup "
-        f"'//bigquery.googleapis.com/projects/{proyecto}/datasets/{dataset}/tables/{tabla}' "
-        f"--location={REGION} --project={PROJECT_ID} --format='value(name)'"
+    # Entry name directo — formato conocido para BigQuery
+    entry_name = (
+        f"projects/{PROJECT_ID}/locations/{REGION}"
+        f"/entryGroups/@bigquery/entries/"
+        f"bigquery.googleapis.com/projects/{PROJECT_ID}"
+        f"/datasets/{dataset}/tables/{tabla}"
     )
 
-    if not success or not entry_name:
-        print(f"   ⚠️  {tabla:<35} → entry no indexado aún")
-        return
-
-    # Escribir aspect value
     aspect_file = f"/tmp/aspect_{dataset}_{tabla}.json"
     aspect_key  = f"{PROJECT_ID}.{REGION}.{ASPECT_TYPE_ID}"
+
     with open(aspect_file, "w") as f:
         json.dump({
             aspect_key: {
@@ -65,8 +76,8 @@ def aplicar_aspect(tabla_fqn: str, sensitivity: str, pii: bool,
         }, f)
 
     success, out, err = run(
-        f"gcloud dataplex entries update {entry_name} "
-        f"--aspects={aspect_file} "
+        f"gcloud dataplex entries update '{entry_name}' "
+        f"--update-aspects={aspect_file} "
         f"--project={PROJECT_ID} --quiet"
     )
 
@@ -83,7 +94,6 @@ def main():
     print(f" Ejecutado : {ahora.strftime('%Y-%m-%d %H:%M:%S %Z')}")
     print("=" * 65)
 
-    # SILVER
     print(f"\n🥈 Aplicando aspects a Silver...")
     for t, s, p, l, o, r, a in [
         ("clientes_deidentified",     "CONFIDENTIAL", True,  True,  "Data Engineering", 7, True),
@@ -92,7 +102,6 @@ def main():
     ]:
         aplicar_aspect(f"{PROJECT_ID}.silver.{t}", s, p, l, o, r, a)
 
-    # GOLD
     print(f"\n🥇 Aplicando aspects a Gold...")
     for t, s, p, l, o, r, a in [
         ("dim_cliente",            "INTERNAL", False, True,  "Analytics Team",   7, True),
