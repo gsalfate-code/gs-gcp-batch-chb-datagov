@@ -43,8 +43,7 @@ sources:
             tests:
               - not_null
               - accepted_values:
-                  arguments:
-                    values: ['ACTIVO', 'BLOQUEADO', 'ELIMINADO']
+                  values: ['ACTIVO', 'BLOQUEADO', 'ELIMINADO']
 
       - name: transacciones_deidentified
         description: "Transacciones con PII enmascarado y campos de negocio intactos"
@@ -77,13 +76,11 @@ sources:
             tests:
               - not_null
               - accepted_values:
-                  arguments:
-                    values: ['A', 'R', 'C', 'O', 'P']
+                  values: ['A', 'R', 'C', 'O', 'P']
 
           - name: estado
             description: "Estado de la solicitud"
             tests:
               - not_null
               - accepted_values:
-                  arguments:
-                    values: ['PENDIENTE', 'EN_PROCESO', 'COMPLETADO', 'VENCIDO']
+                  values: ['PENDIENTE', 'EN_PROCESO', 'COMPLETADO', 'VENCIDO']
