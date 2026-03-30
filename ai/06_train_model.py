@@ -68,13 +68,6 @@ def main():
     total = list(client.query(count_query).result())[0].total
     print(f"   Registros válidos para entrenar: {total:,}")
 
-    if total < 10:
-        print("   ⚠️  Menos de 10 registros — generando más datos primero")
-        print("   Ejecuta: python data_generator/01_generate_data.py")
-        print("   Luego:   python dlp/02_dlp_deidentify.py")
-        print("   Luego:   cd dbt/chb_datagov && dbt run")
-        return
-
     # -------------------------------------------------------------------------
     # PASO 2: Entrenar modelo K-Means
     #

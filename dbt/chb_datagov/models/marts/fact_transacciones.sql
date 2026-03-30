@@ -24,6 +24,7 @@
 
 {{ config(
     materialized  = 'table',
+    full_refresh  = true,
     partition_by  = {
         'field': 'fecha',
         'data_type': 'date',
@@ -134,3 +135,4 @@ joined as (
 )
 
 select * from joined
+QUALIFY ROW_NUMBER() OVER (PARTITION BY id_transaccion ORDER BY fecha_deidentify DESC) = 1

@@ -352,7 +352,7 @@ def deidentify_transaccion(txn: dict) -> dict:
 # Usamos load_table_from_json para inserción batch eficiente.
 # write_disposition WRITE_APPEND agrega sin borrar datos anteriores.
 # -----------------------------------------------------------------------------
-def cargar_a_bigquery(bq_client: bigquery.Client, tabla_id: str, registros: list, schema: list) -> None:
+def cargar_a_bigquery(bq_client: bigquery.Client, tabla_id: str, registros: list, schema: list, truncate: bool = False) -> None:
     """
     Carga registros en BigQuery Silver.
 
@@ -365,7 +365,7 @@ def cargar_a_bigquery(bq_client: bigquery.Client, tabla_id: str, registros: list
 
     job_config = bigquery.LoadJobConfig(
         schema            = schema,
-        write_disposition = bigquery.WriteDisposition.WRITE_APPEND,
+        write_disposition = bigquery.WriteDisposition.WRITE_TRUNCATE if truncate else bigquery.WriteDisposition.WRITE_APPEND,
         source_format     = bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
     )
 
@@ -509,7 +509,7 @@ def main():
         print(f"   rango_renta    : {muestra['rango_renta']}")
 
         tabla_clientes = f"{PROJECT_ID}.{DATASET_SILVER}.clientes_deidentified"
-        cargar_a_bigquery(bq_client, tabla_clientes, clientes_silver, SCHEMA_CLIENTES)
+        cargar_a_bigquery(bq_client, tabla_clientes, clientes_silver, SCHEMA_CLIENTES, truncate=True)
     else:
         print("   ⚠️  Maestro no encontrado")
 
