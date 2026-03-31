@@ -120,7 +120,7 @@ def dashboard_api(request):
             if not id_cliente:
                 return (json.dumps({'error': 'id requerido'}), 400, headers)
             data = run_query(f"""
-                SELECT CAST(fecha AS STRING) as fecha, canal, monto_clp,
+                SELECT CAST(fecha AS STRING) as fecha, hora, canal, monto_clp,
                        clasificacion_ml, nivel_riesgo_anomalia,
                        CAST(flag_uaf_threshold AS STRING) as flag_uaf_threshold
                 FROM `{PROJECT}.gold.fact_transacciones_ml`

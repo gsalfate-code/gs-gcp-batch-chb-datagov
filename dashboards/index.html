@@ -180,7 +180,7 @@ tr:hover td { background: #fafafa; }
     <div class="card"><div class="card-title">Datos demográficos</div><div id="demo-content"><div class="loading">Selecciona un cliente</div></div></div>
     <div class="card"><div class="card-title">Datos financieros</div><div id="fin-content"><div class="loading">Selecciona un cliente</div></div></div>
   </div>
-  <div class="card"><div class="card-title">Últimas transacciones</div><div id="txn-content"><div class="loading">Selecciona un cliente</div></div></div>
+  <div class="card" style="overflow-x:auto;"><div class="card-title">Últimas transacciones</div><div id="txn-content"><div class="loading">Selecciona un cliente</div></div></div>
   <div class="card"><div class="card-title">Solicitudes ARCOP</div><div id="arcop-detail"><div class="loading">Selecciona un cliente</div></div></div>
 </div>
 
@@ -358,7 +358,7 @@ async function loadClientDetail(id) {
     <table>
       <thead><tr><th>Fecha</th><th>Canal</th><th>Monto</th><th>Riesgo</th><th>Clasificación ML</th><th>UAF</th></tr></thead>
       <tbody>${txn.map(r => `<tr>
-        <td>${r.fecha}</td><td>${r.canal}</td>
+        <td>${r.fecha} ${r.hora!==undefined ? r.hora+":00" : ""}</td><td>${r.canal}</td>
         <td style="font-weight:500;">${fmtCLP(r.monto_clp)}</td>
         <td>${r.nivel_riesgo_anomalia||""}</td>
         <td><span class="badge ${r.clasificacion_ml==='NORMAL'?'normal':'anomala'}">${r.clasificacion_ml}</span></td>
