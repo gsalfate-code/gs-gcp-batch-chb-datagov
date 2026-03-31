@@ -133,7 +133,7 @@ def dashboard_api(request):
             if not id_cliente:
                 return (json.dumps({'error': 'id requerido'}), 400, headers)
             data = run_query(f"""
-                SELECT tipo_derecho, estado, dias_restantes, prioridad
+                SELECT tipo_derecho, estado, vence_en_dias as dias_restantes, prioridad, flag_vencida, flag_proxima_vencer
                 FROM `{PROJECT}.gold.fact_arcop_solicitudes`
                 WHERE id_cliente = '{id_cliente}'
                 ORDER BY fecha_solicitud DESC LIMIT 5

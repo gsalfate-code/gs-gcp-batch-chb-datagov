@@ -267,9 +267,10 @@ async function loadAll() {
   const a = (await apiFetch('arcop'))[0] || {};
   document.getElementById('arcop-content').innerHTML = `
     <div class="semaforo-row"><span>Tasa cumplimiento</span><span><b>${parseFloat(a.tasa_cumplimiento||0).toFixed(1)}%</b> ${badgeCalidad(a.tasa_cumplimiento||0)}</span></div>
-    <div class="semaforo-row"><span>Vencidas</span><span><b>${fmt(a.total_vencidas||0)}</b> <span class="badge rojo">CRITICA</span></span></div>
-    <div class="semaforo-row"><span>Por vencer</span><span><b>${fmt(a.proximas_vencer||0)}</b> <span class="badge amarillo">ALTA</span></span></div>
-    <div class="semaforo-row"><span>Completadas</span><span><b>${fmt(a.total_completadas||0)}</b> <span class="badge verde">OK</span></span></div>`;
+    <div class="semaforo-row"><span>Total solicitudes</span><span><b>${fmt(a.total_solicitudes||0)}</b></span></div>
+    <div class="semaforo-row"><span>Pendientes</span><span><b>${fmt(a.total_pendientes||0)}</b> <span class="badge amarillo">EN PROCESO</span></span></div>
+    <div class="semaforo-row"><span>Completadas</span><span><b>${fmt(a.total_completadas||0)}</b> <span class="badge verde">OK</span></span></div>
+    <div class="semaforo-row"><span>Vencidas</span><span><b>${fmt(a.total_vencidas||0)}</b> <span class="badge rojo">CRITICA</span></span></div>`;
 
   const reg = await apiFetch('regiones');
   const maxR = Math.max(...reg.map(r => parseInt(r.total)));
