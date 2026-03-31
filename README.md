@@ -230,6 +230,16 @@ gcloud dataplex entries list \
 
 ---
 
+## 🌐 Links del Proyecto
+
+| Recurso | URL |
+|---|---|
+| Dashboard público | https://storage.googleapis.com/chb-datagov-dashboard/index.html |
+| Cloud Function API | https://us-central1-gs-gcp-batch-chb-datagov.cloudfunctions.net/dashboard-api |
+| Repositorio GitHub | https://github.com/gsalfate-code/gs-gcp-batch-chb-datagov |
+
+---
+
 ## 👤 Autor
 
 **Gonzalo Salfate**
