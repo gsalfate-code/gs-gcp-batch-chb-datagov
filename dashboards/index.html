@@ -355,11 +355,11 @@ async function loadClientDetail(id) {
   const txn = await (await fetch(`${API}?q=cliente_txn&id=${id}`)).json();
   document.getElementById('txn-content').innerHTML = txn.length ? `
     <table>
-      <thead><tr><th>Fecha</th><th>Canal</th><th>Monto</th><th>Tipo</th><th>Clasificación ML</th><th>UAF</th></tr></thead>
+      <thead><tr><th>Fecha</th><th>Canal</th><th>Monto</th><th>Riesgo</th><th>Clasificación ML</th><th>UAF</th></tr></thead>
       <tbody>${txn.map(r => `<tr>
         <td>${r.fecha}</td><td>${r.canal}</td>
         <td style="font-weight:500;">${fmtCLP(r.monto_clp)}</td>
-        <td>${r.tipo_transaccion}</td>
+        <td>${r.nivel_riesgo_anomalia||""}</td>
         <td><span class="badge ${r.clasificacion_ml==='NORMAL'?'normal':'anomala'}">${r.clasificacion_ml}</span></td>
         <td>${r.flag_uaf_threshold==='True'?'<span class="badge rojo">ALERTA</span>':'—'}</td>
       </tr>`).join('')}</tbody>
