@@ -455,7 +455,7 @@ SCHEMA_ARCOP = [
 # -----------------------------------------------------------------------------
 def main():
     ahora     = datetime.now(TIMEZONE)
-    hora      = (ahora - timedelta(hours=1)).hour
+    hora      = int(os.getenv("FORCE_HORA", (ahora - timedelta(hours=1)).hour))
     fecha     = ahora.date()
     fecha_str = fecha.strftime("%Y-%m-%d")
 
